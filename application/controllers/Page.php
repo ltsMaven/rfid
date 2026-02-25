@@ -51,8 +51,15 @@ class Page extends CI_Controller
 	public function box()
 	{
 		$footer['halaman'] = 'bx';
-		$data['pl_list'] = $this->pagemodel->getplno();
+
+		$hide = $this->input->post('plSelesai', true) === '1';
 		$plno = $this->input->post('selectedPlNo', true);
+
+		if ($hide && $plno) {
+			$this->pagemodel->setPlVisible($plno, false);
+			$plno = null;
+		}
+		$data['pl_list'] = $this->pagemodel->getplno();
 		if ($plno === null && !empty($data['pl_list'])) {
 			$plno = $data['pl_list'][0]['plno'];
 		}

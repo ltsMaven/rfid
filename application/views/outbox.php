@@ -16,13 +16,6 @@ $progressPercent = $progressPercent ?? 0;
                     <div id="jam" style="text-align: left;" class="font-bold text-secondary">-- : -- : --</div>
                 </h5>
             </div>
-            <div class="col-sm-6 float-right pt-1" style="text-align: right;">
-                <select class="form-control form-select btn-sm flat font-kecil" id="alat" name="alat"
-                    style="width: 60% !important; float: right; height: 31px; margin-right: 5px;">
-                    <option value="fixedreader">Fixed Reader</option>
-                    <option value="handheld">Handheld</option>
-                </select>
-            </div>
         </div>
         <form action="<?= site_url('page/box') ?>" method="post" class="row align-items-center mb-3">
 
@@ -115,12 +108,24 @@ $progressPercent = $progressPercent ?? 0;
                     <div class="py-3"><!-- empty, adds vertical gap --></div>
                 </div>
             </div>
-            <div class=" w-50 mt-2">
-                <div class="progress">
+            <div class=" w-50 mt-2 mx-auto text-center">
+                <?= $doneOrdersCount ?>/<?= $totalOrdersCount ?>
+
+                <div class="progress mb-2 mt-2">
                     <div class="progress-bar" role="progressbar" style="width: <?= $progressPercent ?>%;"
                         aria-valuenow="<?= $progressPercent ?>" aria-valuemin="0" aria-valuemax="100">
-                        <?= $progressPercent ?>%</div>
+                        <?= $progressPercent ?>%
+                    </div>
                 </div>
+                <?php if ($plno): ?>
+                    <form method="post" action="<?= site_url('page/box') ?>" style="display:inline;">
+                        <input type="hidden" name="selectedPlNo" value="<?= html_escape($plno) ?>">
+                        <input type="hidden" name="plSelesai" value="1">
+                        <button type="submit" class="btn btn-sm btn-warning" style="margin-left:8px;">
+                            Selesaikan Orderan
+                        </button>
+                    </form>
+                <?php endif; ?>
             </div>
         </div>
     </div>
