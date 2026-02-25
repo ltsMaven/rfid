@@ -123,18 +123,26 @@ class Page_model extends CI_Model
                             $id = $balenumber['id'];
                         }
                     }else{
+                        $dis = $hasilpackfin['dis'] == 0 ? '' : ' dis ' . $hasilpackfin['dis'];
+                        $nobale = ' Bale No. ' . $hasilpackfin['nobale'];
+                        $isi = $hasilpackfin['po'] . '#' . trim($hasilpackfin['item']) . $dis . $nobale . ' - ( NOT FOUND)';
                         $done = 'BALE BELUM DI CEK';
                         $status = 'NG';
                     }
                 }else{
+                    $dis = $hasilpackfin['dis'] == 0 ? '' : ' dis ' . $hasilpackfin['dis'];
+                    $nobale = ' Bale No. ' . $hasilpackfin['nobale'];
+                    $isi = $hasilpackfin['po'] . '#' . trim($hasilpackfin['item']) . $dis . $nobale . ' - ( NOT FOUND)';
                     $done = 'TIDAK ADA DI PACKING LIST';
                     $status = 'NG';
                 }
             }else{
+                $isi = $val. ' - ( NOT FOUND)';
                 $done = 'BLM KELUAR FN';
                 $status = 'NG';
             }
         }else{
+            $isi = $val. ' - ( NOT FOUND)';
             $done = 'RFID TIDAK DITEMUKAN';
             $status = 'NG';
         }
@@ -150,7 +158,7 @@ class Page_model extends CI_Model
         } else {
             // $hasil = [];
             $hasil['kondisi'] = 'gagal';
-            $hasil['isi'] = 'XAAASDASDA';
+            $hasil['isi'] = $isi;
             $hasil['done'] = $done;
             $hasil['status'] = $status;
         }
@@ -162,7 +170,7 @@ class Page_model extends CI_Model
             ->distinct()
             ->select('plno')
             ->from('tb_balenumber')
-            ->where('visible', 1)
+            // ->where('visible', 1)
             ->group_by('plno')          // one row per PL-No
             ->order_by('plno', 'ASC')
             ->get()

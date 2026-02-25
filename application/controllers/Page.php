@@ -145,7 +145,7 @@ class Page extends CI_Controller
 				$data[$x]['status'] = $hasil['status'];
 				$data[$x]['done'] = $hasil['done'];
 			} else {
-				$data[$x]['value'] = $value['value'] . ' - (NOT FOUND)';
+				$data[$x]['value'] = $hasil['isi'];
 				$data[$x]['status'] = 'NG';
 				$data[$x]['done'] = $hasil['done'];
 			}
