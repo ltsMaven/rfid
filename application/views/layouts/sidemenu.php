@@ -10,7 +10,7 @@
             <li class="nav-item"><a class="nav-link js-scroll-trigger" href="<?= base_url(); ?>">Dashboard</a></li>
             <li class="nav-item"><a class="nav-link js-scroll-trigger" href="<?= base_url('page/fn'); ?>">Finishing OUT</a></li>
             <li class="nav-item"><a class="nav-link js-scroll-trigger" href="<?= base_url('page/gf'); ?>">Finished Goods IN</a></li>
-            <li class="nav-item"><a class="nav-link js-scroll-trigger" href="<?= base_url('page/box'); ?>">Container IN</a></li>
+            <li class="nav-item"><a class="nav-link js-scroll-trigger" href="<?= base_url('page/boxe'); ?>">Container IN</a></li>
             <!-- <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#interests">Interests</a></li>
             <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#awards">Awards</a></li> -->
         </ul>

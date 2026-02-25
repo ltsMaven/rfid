@@ -32,6 +32,22 @@ class Page extends CI_Controller
 		$this->load->view('ingf.php');
 		$this->load->view('layouts/footer', $footer);
 	}
+	public function boxe()
+	{
+		$footer['halaman'] = 'bx';
+		$this->session->set_userdata('sesibx', time());
+		$data['pl_list'] = $this->pagemodel->getplno();
+		$plno = $this->input->post('selectedPlNo', true);
+		// if ($plno === null && !empty($data['pl_list'])) {
+		// 	$plno = $data['pl_list'][0]['plno'];
+		// }
+		$data['plno'] = $plno;           // so view can use $plno
+		$data['selectedPlNo'] = $plno;
+
+		$this->load->view('layouts/header');
+		$this->load->view('inbox.php',$data);
+		$this->load->view('layouts/footer', $footer);
+	}
 	public function box()
 	{
 		$footer['halaman'] = 'bx';
@@ -105,6 +121,26 @@ class Page extends CI_Controller
 				$data[$x]['value'] = $value['value'] . ' - (NOT FOUND)';
 				$data[$x]['status'] = 'NG';
 				$data[$x]['done'] = 'TIDAK DI GUDANG';
+			}
+			$x++;
+		}
+		echo json_encode($data);
+	}
+	public function validateinbox()
+	{
+		$data = $_POST['data'];
+		$pl = $_POST['plno'];
+		$x = 0;
+		foreach ($data as $dat => $value) {
+			$hasil = $this->pagemodel->cekDataInbox($value['value'],$pl);
+			if ($hasil['kondisi']=='sukses') {
+				$data[$x]['value'] = $hasil['isi'];
+				$data[$x]['status'] = $hasil['status'];
+				$data[$x]['done'] = $hasil['done'];
+			} else {
+				$data[$x]['value'] = $value['value'] . ' - (NOT FOUND)';
+				$data[$x]['status'] = 'NG';
+				$data[$x]['done'] = $hasil['done'];
 			}
 			$x++;
 		}
