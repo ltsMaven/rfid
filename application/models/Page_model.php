@@ -26,7 +26,7 @@ class Page_model extends CI_Model
                     'item' => $data['item'],
                     'dis' => $data['dis'],
                     'nobale' => $data['nobale'],
-                    'rfid' => $data['rfid'],
+                    'rfid' => $val,
                     'gate_out' => $currentDateTime->format('Y-m-d H:i:s'),
                     'sesifn' => $this->session->userdata('sesifn'),
                 ];
@@ -102,7 +102,7 @@ class Page_model extends CI_Model
                 $hasilpackfin = $cekpackfin->row_array();
                 $this->db->where('po',$hasilpackfin['po']);
                 $this->db->where('item',$hasilpackfin['item']);
-                $this->db->where('dis',$hasilpackfin['dis']);
+                // $this->db->where('dis',$hasilpackfin['dis']);
                 $this->db->where('nobale',$hasilpackfin['nobale']);
                 $this->db->where('plno',$pl);
                 $cekbalenumber = $this->db->get('tb_balenumber');
