@@ -48,75 +48,59 @@ $progressPercent = $progressPercent ?? 0;
 
 
         <!-- add space  -->
-        <div class="row justify-content-center">
+        <div class="row">
             <div class="col-lg-6">
-                <div class="py-3"><!-- empty, adds vertical gap --></div>
+                <div id="rekapvalid" class="py-3" style="font-weight: bold; color: black;"><?=  $progressPercent ?> Rekord telah tervalidasi dari ... Rekord ( ... Sisa)</div>
             </div>
         </div>
         <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8 d-flex flex-column" style="height: 500px;">
-                <div class="d-flex justify-content-end mb-2">
-                    <form method="post" action="<?= site_url('page/box') ?>" style="display:inline;">
-                        <!-- preserve the selected PL No -->
-                        <input type="hidden" name="selectedPlNo" value="<?= html_escape($plno) ?>">
-                        <?php if ($show_done): ?>
-                            <!-- If we’re showing done, switch back to pending -->
-                            <input type="hidden" name="show_done" value="0">
-                            <button type="submit" class="btn btn-sm btn-primary">
-                                Daftar order belum selesai
-                            </button>
-                        <?php else: ?>
-                            <!-- Otherwise show the done list -->
-                            <input type="hidden" name="show_done" value="1">
-                            <button type="submit" class="btn btn-sm btn-primary">
-                                Daftar order selesai
-                            </button>
-                        <?php endif; ?>
-                    </form>
-                </div>
-                <div class="d-flex align-items-center mb-1">
-                    <div class="flex-grow-1 font-bold">INPUT LIST</div>
-                    <div class="text-end font-bold" id="posex" style="width:100px;">STATUS</div>
-                </div>
-                <hr class="my-1" />
+            <div class="col-12 d-flex flex-column" style="height: 500px;">
                 <div id="tampungan" class="flex-grow-1 overflow-auto border rounded p-2">
-                    <?php if (empty($orders)): ?>
-                        <div class="text-center text-muted">Tidak ada data untuk PL: <?= html_escape($plno) ?></div>
-                    <?php else: ?>
-                        <?php foreach ($orders as $o): ?>
-
-                            <div class="row align-items-center mb-1">
-                                <div class="col-7 text-start">
-                                    <?= $o['id'] ?>. <?= html_escape($o['po']) ?>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">P/O</th>
+                            <th scope="col">No Bale</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($orders)): ?>
+                            <tr>
+                                <td class="text-center text-muted">Tidak ada data untuk PL: <?= html_escape($plno) ?></td>
+                            </tr>
+                        <?php else: ?>
+                            <?php $no=1; foreach ($orders as $o): ?>
+                                <tr>
+                                    <th scope="row"><?= $no++ ?></th>
+                                    <td><?= html_escape($o['po']) ?>
                                     / <?= html_escape($o['item']) ?>
-                                    <?php if ($o['dis']): ?> dis <?= $o['dis'] ?><?php endif; ?>
-                                    Bale <?= $o['nobale'] ?>
-                                </div>
-                                <div class="col-2 text-center">
-                                    <?= $o['masuk'] ?>
-                                </div>
-                                <div class="col-3 d-flex justify-content-end">
-                                    <!-- if you have a status field in $o (e.g. OK/NG) -->
-                                    <?php
-                                    if (empty($o['masuk'])) {
-                                        $st = 'NG';
-                                    } else {
-                                        $st = $o['status'] ?? 'OK';
-                                    }
+                                    <?php if ($o['dis']): ?> dis <?= $o['dis'] ?><?php endif; ?></td>
+                                    <td><?= $o['nobale'] ?></td>
+                                    <td>
+                                        <?php
+                                        if (empty($o['masuk'])) {
+                                            $st = 'NG';
+                                        } else {
+                                            $st = $o['status'] ?? 'OK';
+                                        }
 
-                                    // then map it to a Bootstrap badge color
-                                    $cls = $st === 'OK'
-                                        ? 'success'
-                                        : ($st === 'SA'
-                                            ? 'warning'
-                                            : 'danger');
-                                    ?>
-                                    <span class="badge bg-<?= $cls ?>"><?= $st ?></span>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
+                                        // then map it to a Bootstrap badge color
+                                        $cls = $st === 'OK'
+                                            ? 'success'
+                                            : ($st === 'SA'
+                                                ? 'warning'
+                                                : 'danger');
+                                        ?>
+                                        <span class="badge bg-<?= $cls ?>"><?= $st ?></span>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>  
+                    </tbody>
+                </table>
+            </div>
             </div>
 
             <div class="row justify-content-center">

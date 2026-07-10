@@ -26,7 +26,7 @@ class Page_model extends CI_Model
                     'item' => $data['item'],
                     'dis' => $data['dis'],
                     'nobale' => $data['nobale'],
-                    'rfid' => $data['rfid'],
+                    'rfid' => $val,
                     'gate_out' => $currentDateTime->format('Y-m-d H:i:s'),
                     'sesifn' => $this->session->userdata('sesifn'),
                 ];
@@ -84,13 +84,93 @@ class Page_model extends CI_Model
         }
         return $hasil;
     }
+
+    public function cekDataInbox($val,$pl)
+    {
+        $hasil = [];
+        $id = 0;
+        $sudahada = 0;
+        // Cek data IN masuk ke Gudang 
+        $this->db->where('rfid',$val);
+        $cekrfid = $this->db->get('tb_rfid');
+        if($cekrfid->num_rows() > 0){
+            $hasilrfid = $cekrfid->row_array();
+            // Cek data Register packfin 
+            $this->db->where('rfid', $val);
+            $cekpackfin = $this->db->get('tb_packfin');
+            if ($cekpackfin->num_rows() > 0) {
+                $hasilpackfin = $cekpackfin->row_array();
+                $this->db->where('po',$hasilpackfin['po']);
+                $this->db->where('item',$hasilpackfin['item']);
+                // $this->db->where('dis',$hasilpackfin['dis']);
+                $this->db->where('nobale',$hasilpackfin['nobale']);
+                $this->db->where('plno',$pl);
+                $cekbalenumber = $this->db->get('tb_balenumber');
+                if($cekbalenumber->num_rows() > 0){
+                    $balenumber = $cekbalenumber->row_array();
+                    if($balenumber['masuk'] >= 1){
+                        if($balenumber['selesai'] == 1){
+                            $sudahada = 1;
+                            $id = $balenumber['id'];
+                        }else{
+                            $currentDateTime = new DateTime('now');
+                            
+                            $this->db->where('id',$hasilrfid['id']);
+                            $this->db->update('tb_rfid',['cont_in' => $currentDateTime->format('Y-m-d H:i:s')]);
+
+                            $this->db->where('id', $balenumber['id']);
+                            $this->db->update('tb_balenumber', ['selesai' => 1, 'waktu_selesai' => $currentDateTime->format('Y-m-d H:i:s')]);
+                            $id = $balenumber['id'];
+                        }
+                    }else{
+                        $dis = $hasilpackfin['dis'] == 0 ? '' : ' dis ' . $hasilpackfin['dis'];
+                        $nobale = ' Bale No. ' . $hasilpackfin['nobale'];
+                        $isi = $hasilpackfin['po'] . '#' . trim($hasilpackfin['item']) . $dis . $nobale . ' - ( NOT FOUND)';
+                        $done = 'BALE BELUM DI CEK';
+                        $status = 'NG';
+                    }
+                }else{
+                    $dis = $hasilpackfin['dis'] == 0 ? '' : ' dis ' . $hasilpackfin['dis'];
+                    $nobale = ' Bale No. ' . $hasilpackfin['nobale'];
+                    $isi = $hasilpackfin['po'] . '#' . trim($hasilpackfin['item']) . $dis . $nobale . ' - ( NOT FOUND)';
+                    $done = 'TIDAK ADA DI PACKING LIST';
+                    $status = 'NG';
+                }
+            }else{
+                $isi = $val. ' - ( NOT FOUND)';
+                $done = 'BLM KELUAR FN';
+                $status = 'NG';
+            }
+        }else{
+            $isi = $val. ' - ( NOT FOUND)';
+            $done = 'RFID TIDAK DITEMUKAN';
+            $status = 'NG';
+        }
+        if ($id > 0) {
+            $xhas = $this->db->get_where('tb_balenumber', ['id' => $id])->row_array();
+            $dis = $xhas['dis'] == 0 ? '' : ' dis ' . $xhas['dis'];
+            $adarf = $sudahada == 1 ? ' SUDAH DI INPUT ' : 'BERHASIL MASUK';
+            $nobale = ' Bale No. ' . $xhas['nobale'];
+            $hasil['kondisi'] = 'sukses';
+            $hasil['isi'] = $xhas['po'] . '#' . trim($xhas['item']) . $dis . $nobale . ' (' . $xhas['waktu_selesai'] . ')';
+            $hasil['done'] = $adarf;
+            $hasil['status'] = $sudahada == 1 ? 'SA' : 'OK';
+        } else {
+            // $hasil = [];
+            $hasil['kondisi'] = 'gagal';
+            $hasil['isi'] = $isi;
+            $hasil['done'] = $done;
+            $hasil['status'] = $status;
+        }
+        return $hasil;
+    }
     public function getPlNo()
     {
         return $this->db
             ->distinct()
             ->select('plno')
             ->from('tb_balenumber')
-            ->where('visible', 1)
+            // ->where('visible', 1)
             ->group_by('plno')          // one row per PL-No
             ->order_by('plno', 'ASC')
             ->get()
@@ -124,7 +204,7 @@ class Page_model extends CI_Model
             return [];
         }
         return $this->db
-            ->select('id, po, item, dis, nobale, masuk')
+            ->select('id, po, item, dis, nobale, masuk, selesai')
             ->from('tb_balenumber')
             ->where('plno', $plno)
             // ->where('selesai', 0)

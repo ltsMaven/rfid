@@ -11330,3 +11330,6 @@ section.resume-section .resume-section-content {
 	display: none;
 	visibility: hidden;
 }
+.font-11 {
+	font-size: 11px !important;
+}
